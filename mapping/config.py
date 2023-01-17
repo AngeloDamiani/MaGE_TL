@@ -1,0 +1,1 @@
+LOGGING_DIR = './lightning_logs'
