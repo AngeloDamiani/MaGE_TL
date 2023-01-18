@@ -39,10 +39,11 @@ class LitAutoEncoder(ModelInterface):
         x, _= batch
         
         x_hat = self.forward(x)
+        
         x_enc = self.encoder(x)
 
         s_t, a_t, s1_t = torch.split(x_enc, [self.s_size, self.a_size, self.s_size], dim=1)
-        valid = torch.zeros((batch.shape[0], 1)).fill_(1.0)
+        valid = torch.zeros((x.shape[0], 1)).fill_(1.0)
 
         # Compute all independent losses
         D_loss = nn.BCELoss()(self.D(x_enc), valid)

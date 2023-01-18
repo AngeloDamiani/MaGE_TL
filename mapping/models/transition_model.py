@@ -33,6 +33,10 @@ class TransitionModel(ModelInterface):
     def validation_step(self, batch, batch_idx):
         loss = self._get_loss(batch)
         self.log("val_loss", loss)
+
+        sa, s1 = batch
+        s1_hat = self.forward(sa)
+        self.log("val_accuracy",nn.MSELoss()(s1, s1_hat))
         return loss
 
     def test_step(self, batch, batch_idx):

@@ -58,6 +58,11 @@ class Discriminator(ModelInterface):
     def validation_step(self, batch, batch_idx):
         loss = self._get_loss_batch(batch)
         self.log("val_loss", loss)
+
+        sas, label = batch
+        res = self.forward(sas)
+        self.log("val_accuracy", torch.mean(torch.abs(res-label)))
+
         return loss
 
     def test_step(self, batch, batch_idx):
