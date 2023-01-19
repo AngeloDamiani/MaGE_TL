@@ -1,1 +1,1 @@
-LOGGING_DIR = './lightning_logs'
+LOGGING_DIR = './lightning_logs_pend2mc'
