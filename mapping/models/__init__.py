@@ -42,6 +42,11 @@ class ModelInterface(pl.LightningModule):
         trainer.fit(
             model=self, train_dataloaders=train_loader, val_dataloaders=validation_loader
         )
+    
+    def as_dict(self):
+        m_dict = {}
+        m_dict['func'] = lambda X: self(X)
+        return m_dict
 
 from mapping.models.autoencoder import LitAutoEncoder
 from mapping.models.discriminator import Discriminator

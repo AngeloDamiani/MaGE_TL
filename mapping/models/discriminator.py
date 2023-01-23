@@ -78,7 +78,7 @@ class Discriminator(ModelInterface):
         return loss
 
     def configure_optimizers(self):
-        optimizer = optim.AdamW(self.parameters(), lr=0.001)
+        optimizer = optim.AdamW(self.parameters(), lr=0.0001)
         return optimizer
 
     def backward(self, loss, optimizer, optimizer_idx):

@@ -63,3 +63,10 @@ class TransitionModel(ModelInterface):
 
     def backward(self, loss, optimizer, optimizer_idx):
         loss.backward(retain_graph=True)
+    
+    def as_dict(self):
+        T_dict = {}
+        T_dict['func'] = lambda sa: self(sa)
+        T_dict['s_dim'] = self.s_dim
+        T_dict['a_dim'] = self.a_dim
+        return T_dict
