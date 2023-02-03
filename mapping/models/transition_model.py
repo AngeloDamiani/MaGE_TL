@@ -6,23 +6,23 @@ import torch.optim as optim
 from mapping.models import ModelInterface
 
 class TransitionModel(ModelInterface):
-    def __init__(self, s_dim, a_dim):
-        super().__init__()
+    def __init__(self, lr, **kwargs):
+        super(TransitionModel, self).__init__(lr)
         self.loss_criterion = nn.L1Loss()
-        self.s_dim = s_dim
-        self.a_dim = a_dim
+        self.s_dim = kwargs['s_dim']
+        self.a_dim = kwargs['a_dim']
 
         self.statefc = nn.Sequential(
-            nn.Linear(s_dim, 64),
+            nn.Linear(self.s_dim, 64),
             nn.ReLU(),
             nn.Linear(64, 128),
         )
         self.actionfc = nn.Sequential(
-            nn.Linear(a_dim, 64),
+            nn.Linear(self.a_dim, 64),
             nn.ReLU(),
             nn.Linear(64, 128),
         )
-        self.predfc = nn.Sequential(nn.Linear(256, 64), nn.ReLU(), nn.Linear(64, s_dim))
+        self.predfc = nn.Sequential(nn.Linear(256, 64), nn.ReLU(), nn.Linear(64, self.s_dim))
 
     def training_step(self, batch, batch_idx):
         loss = self._get_loss(batch)

@@ -5,42 +5,77 @@ import torch.optim as optim
 from mapping.models import ModelInterface
 
 class LitAutoEncoder(ModelInterface):
-    def __init__(self, T, D, encoder=None, decoder=None, dim_s=None, lambdas=None):
-        super().__init__()
+    def __init__(self, lr=0.0001, **kwargs):
+        super(LitAutoEncoder, self).__init__(lr)
 
-        D_dict = D.as_dict()
-        T_dict = T.as_dict()
-        self._D = D_dict['func']
-        self._T = T_dict['func']
+        self.s_s_size = kwargs['s_s_size']
+        self.s_a_size = kwargs['s_a_size']
+        self.t_s_size = kwargs['t_s_size']
+        self.t_a_size = kwargs['t_a_size']
 
-        self.s_size = T_dict['s_dim']
-        self.a_size = T_dict['a_dim']
-
-        if lambdas is None:
-            self.lamb_AE, self.lamb_T, self.lamb_D = self._default_lambdas()
-        else:
-            self.lamb_AE, self.lamb_T, self.lamb_D = lambdas
+        # if lambdas is None:
+        #     self.lamb_AE, self.lamb_T, self.lamb_D = self._default_lambdas()
+        # else:
+        #     self.lamb_AE, self.lamb_T, self.lamb_D = lambdas
         
-        if encoder is None or decoder is None:
-            assert dim_s is not None, "Parameter dim_s is required when omiting encoder or decoder"
-        
-        self.encoder = self._default_encoder(dim_s) if encoder is None else encoder
-        self.decoder = self._default_decoder(dim_s) if decoder is None else decoder
 
-    def _default_lambdas(self):
-        return (1,1,1)
-
-    def _default_network(self, input_size, output_size):
-        return nn.Sequential(
-            nn.Linear(input_size, 64), nn.ReLU(), nn.Linear(
-                64, output_size)
+        self.sfc_s = nn.Sequential(
+            nn.Linear(self.s_s_size, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128),
         )
-    
-    def _default_decoder(self, dim_s):
-        return self._default_network(self.s_size*2+self.a_size, dim_s)
-        
-    def _default_encoder(self, dim_s):
-        return self._default_network(dim_s, self.s_size*2+self.a_size)
+        self.actionfc_s = nn.Sequential(
+            nn.Linear(self.s_a_size, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128),
+        )
+        self.s1fc_s = nn.Sequential(
+            nn.Linear(self.s_s_size, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128),
+        )
+        self.model_enc = nn.Sequential(
+            nn.Linear(128 * 3, 64),
+            nn.ReLU(),
+            nn.Linear(64, 2*self.t_s_size+self.t_a_size)
+        )
+
+        self.sfc_t = nn.Sequential(
+            nn.Linear(self.t_s_size, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128),
+        )
+        self.actionfc_t = nn.Sequential(
+            nn.Linear(self.t_a_size, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128),
+        )
+        self.s1fc_t = nn.Sequential(
+            nn.Linear(self.t_s_size, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128),
+        )
+        self.model_dec = nn.Sequential(
+            nn.Linear(128 * 3, 64),
+            nn.ReLU(),
+            nn.Linear(64, 2*self.s_s_size+self.s_a_size)
+        )
+
+    def encoder(self, x):
+        s_s, a_s, s1_s = torch.split(x, [self.s_s_size, self.s_a_size, self.s_s_size], dim=1)
+        s_feature = self.sfc_s(s_s)
+        a_feature = self.actionfc_s(a_s)
+        s1_feature = self.s1fc_s(s1_s)
+        feature = torch.cat((s_feature, a_feature, s1_feature),1)
+        return self.model_enc(feature)
+
+    def decoder(self, x):
+        s_t, a_t, s1_t = torch.split(x, [self.t_s_size, self.t_a_size, self.t_s_size], dim=1)
+        s_feature = self.sfc_t(s_t)
+        a_feature = self.actionfc_t(a_t)
+        s1_feature = self.s1fc_t(s1_t)
+        feature = torch.cat((s_feature, a_feature, s1_feature),1)
+        return self.model_dec(feature)
 
     def _get_loss(self, batch):
         """
@@ -51,30 +86,32 @@ class LitAutoEncoder(ModelInterface):
         
         x_hat = self.forward(x)
         
-        x_enc = self.encoder(x)
+        #x_enc = self.encoder(x)
 
-        s_t, a_t, s1_t = torch.split(x_enc, [self.s_size, self.a_size, self.s_size], dim=1)
-        valid = torch.zeros((x.shape[0], 1)).fill_(1.0)
+        #s_t, a_t, s1_t = torch.split(x_enc, [self.t_s_size, self.t_a_size, self.t_s_size], dim=1)
+        #valid = torch.zeros((x.shape[0], 1)).fill_(1.0)
 
         # Compute all independent losses
-        sa = torch.cat([s_t,a_t],1)
+        #sa = torch.cat([s_t,a_t],1)
 
-        with torch.no_grad():
-            T_loss = nn.L1Loss()(self._T(sa), s1_t)
-            D_loss = nn.BCELoss()(self._D(x_enc), valid)
+        #with torch.no_grad():
+        #    T_loss = nn.L1Loss()(self._T(sa), s1_t)
+        #    D_loss = nn.BCELoss()(self._D(x_enc), valid)
 
         AE_loss = nn.MSELoss()(x, x_hat)
 
-        return AE_loss, T_loss, D_loss
+        return AE_loss#, T_loss, D_loss
 
     def compute_loss(self, batch, log_mode=None):
-        AE_loss, T_loss, D_loss = self._get_loss(batch)
-        loss = self.lamb_AE*AE_loss + self.lamb_T*T_loss + self.lamb_D*D_loss
+        #AE_loss, T_loss, D_loss = self._get_loss(batch)
+        AE_loss = self._get_loss(batch)
+        #loss = self.lamb_AE*AE_loss + self.lamb_T*T_loss + self.lamb_D*D_loss
+        loss = AE_loss
         if log_mode:
             self.log(f"{log_mode}_loss", loss)
-            self.log(f"{log_mode}_AE_loss", AE_loss)
-            self.log(f"{log_mode}_T_loss", T_loss)
-            self.log(f"{log_mode}_D_loss", D_loss)
+            # self.log(f"{log_mode}_AE_loss", AE_loss)
+            # self.log(f"{log_mode}_T_loss", T_loss)
+            # self.log(f"{log_mode}_D_loss", D_loss)
         return loss
 
     def backward(self, loss, optimizer, optimizer_idx):
@@ -96,7 +133,7 @@ class LitAutoEncoder(ModelInterface):
         return self.compute_loss(batch, log_mode='test')
 
     def configure_optimizers(self):
-        optimizer = optim.AdamW(self.parameters(), lr=0.05)
+        optimizer = optim.AdamW(self.parameters(), lr=self.lr)
         return optimizer
 
     def as_dict(self):

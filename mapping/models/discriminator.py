@@ -5,24 +5,24 @@ import torch.optim as optim
 from mapping.models import ModelInterface
 
 class Discriminator(ModelInterface):
-    def __init__(self, s_dim, a_dim):
-        super(Discriminator, self).__init__()
+    def __init__(self, lr, **kwargs):
+        super(Discriminator, self).__init__(lr)
 
-        self.s_dim = s_dim
-        self.a_dim = a_dim
+        self.s_dim = kwargs['s_dim']
+        self.a_dim = kwargs['a_dim']
 
         self.sfc = nn.Sequential(
-            nn.Linear(s_dim, 64),
+            nn.Linear(self.s_dim, 64),
             nn.ReLU(),
             nn.Linear(64, 128),
         )
         self.actionfc = nn.Sequential(
-            nn.Linear(a_dim, 64),
+            nn.Linear(self.a_dim, 64),
             nn.ReLU(),
             nn.Linear(64, 128),
         )
         self.s1fc = nn.Sequential(
-            nn.Linear(s_dim, 64),
+            nn.Linear(self.s_dim, 64),
             nn.ReLU(),
             nn.Linear(64, 128),
         )

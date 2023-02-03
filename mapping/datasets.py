@@ -76,7 +76,25 @@ class RLDatasetFormatter:
         X = torch.cat([self.s,self.a,self.s1],1)
         Y = torch.cat([self.s,self.a,self.s1],1)
         return DatasetSkeleton(X,Y)
-        
+    
+    def normalize_data(self, max_s, min_s, max_a, min_a):
+        norm_s = (self.s - min_s)/(max_s-min_s)
+        norm_a = (self.a - min_a)/(max_a-min_a)
+        norm_s1 = (self.s1 - min_s)/(max_s-min_s)
+        self.s = norm_s
+        self.a = norm_a
+        self.s1 = norm_s1
+        return self
+    
+    def denormalize_data(self, max_s, min_s, max_a, min_a):
+        s = self.s * (max_s - min_s) + min_s
+        a = self.a * (max_a - min_a) + min_a
+        s1 = self.s1 * (max_s - min_s) + min_s
+        self.s = s
+        self.a = a
+        self.s1 = s1
+        return self
+
 
 
 
