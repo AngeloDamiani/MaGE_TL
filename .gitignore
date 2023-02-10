@@ -161,3 +161,9 @@ cython_debug/
 
 # Data Cache
 kaggle/
+lightning_logs/
+data/*
+logs/*
+
+# Mac files
+.DS_Store
