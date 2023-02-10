@@ -1,4 +1,4 @@
-torch==1.13
+torch
 matplotlib
 pandas
 pytorch-lightning
