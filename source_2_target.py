@@ -18,12 +18,13 @@ parser = argparse.ArgumentParser(
 parser.add_argument("id", type=int, default=0, help="Id of the current run")
 parser.add_argument("prefix", type=str, default="A", help="Prefix for current run")
 parser.add_argument("mode", type=str, default="random", help="Config mode")
+parser.add_argument("base_logs", type=str, default="./logs", help="Config mode")
 parser.add_argument("source", type=str, default="Pend", help="Source Environment name")
 parser.add_argument("target", type=str, default="MC", help="Target Environment name")
 args = parser.parse_args()
 
 # Generate a random hyperparameter configuration
-hyper_params = get_config(args.id, args.prefix, mode=args.mode)
+hyper_params = get_config(args.id, args.prefix, mode=args.mode, base_logs=args.base_logs)
 hyp = argparse.Namespace(**hyper_params)
 
 # Ensure the logging dir exists

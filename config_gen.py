@@ -1,7 +1,7 @@
 from random import randint, uniform
 
 
-def get_explore_config(id, prefix):
+def get_explore_config(id, prefix, base_logs="./logs"):
     return {
         "D_batch_size_pretrain": randint(100, 350),
         "D_epochs_pretrain": randint(20, 25),
@@ -18,10 +18,10 @@ def get_explore_config(id, prefix):
         "lmd_D": uniform(4, 6),
         "lmd_T": uniform(0.5, 2.5),  # 1 - 10
         "lmd_R": uniform(11, 13),  # 1 - 10
-        "log_dir": f"./logs/{prefix}_{id}",  # OK
+        "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
     }
 
-def get_random_config(id, prefix):
+def get_random_config(id, prefix, base_logs="./logs"):
     return {
         "D_batch_size_pretrain": randint(50, 350),
         "D_epochs_pretrain": randint(10, 50),
@@ -38,11 +38,11 @@ def get_random_config(id, prefix):
         "lmd_D": uniform(0, 10),
         "lmd_T": uniform(0, 10),  # 1 - 10
         "lmd_R": uniform(0, 10),  # 1 - 10
-        "log_dir": f"./logs/{prefix}_{id}",  # OK
+        "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
     }
 
 
-def get_ran1003_config(id, prefix):
+def get_ran1003_config(id, prefix, base_logs="./logs"):
     return {
     "D_batch_size_pretrain": 188,
     "D_epochs_pretrain": 25,
@@ -59,11 +59,11 @@ def get_ran1003_config(id, prefix):
     "lmd_D": 1.7117454788938802,
     "lmd_T": 8.504341235671774,
     "lmd_R": 9.318351086808468,
-        "log_dir": f"./logs/{prefix}_{id}",
+        "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
     }
 
 
-def get_g1_config(id, prefix):
+def get_g1_config(id, prefix, base_logs="./logs"):
     return {
         "D_batch_size_pretrain": 281,
         "D_epochs_pretrain": 25,
@@ -80,11 +80,11 @@ def get_g1_config(id, prefix):
         "lmd_D": 5.492851091352457,
         "lmd_T": 1.531975708267081,
         "lmd_R": 12.55524708578032,
-        "log_dir": f"./logs/{prefix}_{id}",
+        "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
     }
 
 
-def get_g4_config(id, prefix):
+def get_g4_config(id, prefix, base_logs="./logs"):
     return {
         "D_batch_size_pretrain": 215,
         "D_epochs_pretrain": 22,
@@ -101,11 +101,11 @@ def get_g4_config(id, prefix):
         "lmd_D": 5.536489657352626,
         "lmd_T": 0.5385697817555073,
         "lmd_R": 12.518822822484182,
-        "log_dir": f"./logs/{prefix}_{id}",
+        "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
     }
 
 
-def get_g5_config(id, prefix):
+def get_g5_config(id, prefix, base_logs="./logs"):
     return {
         "D_batch_size_pretrain": 215,
         "D_epochs_pretrain": 20,
@@ -122,13 +122,13 @@ def get_g5_config(id, prefix):
         "lmd_D": 4.930014959059831,
         "lmd_T": 1.3742280719800923,
         "lmd_R": 12.507150274192803,
-        "log_dir": f"./logs/{prefix}_{id}",
+        "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
     }
 
 
-def get_a1_config(id, prefix):
+def get_a1_config(id, prefix, base_logs="./logs"):
     return {
-        "log_dir": f"./logs/{prefix}_{id}",
+        "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
   "D_batch_size_pretrain": 308,
   "D_epochs_pretrain": 22,
   "D_batch_size": 189,
@@ -146,9 +146,9 @@ def get_a1_config(id, prefix):
   "lmd_R": 12.745102985142589
 }
 
-def get_default_config(id, prefix):
+def get_default_config(id, prefix, base_logs="./logs"):
     return {
-        "log_dir": f"./logs/{prefix}_{id}",
+        "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
         "T_epochs": 100,
         "T_batch_size": 100,
         "T_lr": 0.001,
@@ -167,9 +167,9 @@ def get_default_config(id, prefix):
     }
 
 
-def get_debug_config(id, prefix):
+def get_debug_config(id, prefix, base_logs="./logs"):
     return {
-        "log_dir": f"./logs/{prefix}_{id}",
+        "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
         "T_epochs": 1,
         "T_batch_size": 1000,
         "T_lr": 0.001,
@@ -187,9 +187,9 @@ def get_debug_config(id, prefix):
         "lmd_R": 1,
     }
 
-def get_ang0_config(id, prefix):
+def get_ang0_config(id, prefix, base_logs="./logs"):
     return {
-        "log_dir": f"./logs/{prefix}_{id}",
+        "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
         "T_epochs": 100,
         "T_batch_size": 100,
         "T_lr": 0.001,
@@ -221,6 +221,6 @@ config_functs = {
 }
 
 
-def get_config(id, prefix="run", mode=None):
+def get_config(id, prefix="run", mode=None, base_logs="./logs"):
     config = config_functs.get(mode, get_random_config)  
     return config(id, prefix)
