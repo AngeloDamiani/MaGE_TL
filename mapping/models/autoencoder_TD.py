@@ -5,22 +5,21 @@ import torch.optim as optim
 from mapping.models import ModelInterface
 
 class LitAutoEncoder(ModelInterface):
-    def __init__(self, lr=0.0001, **kwargs):
+    def __init__(self, D, T, lambdas=None, lr=0.0001, **kwargs):
         super(LitAutoEncoder, self).__init__(lr)
 
-        self.s_s_size = kwargs['s_s_size']
-        self.s_a_size = kwargs['s_a_size']
-        self.t_s_size = kwargs['t_s_size']
-        self.t_a_size = kwargs['t_a_size']
+        self.D = D
+        self.T = T
 
-        self.D = kwargs['D']
-        self.T = kwargs['T']
-        
-        if 'lambdas' in kwargs:
-            self.lamb_AE, self.lamb_T, self.lamb_D = kwargs["lambdas"]
+        if lambdas is not None:
+            self.lamb_AE, self.lamb_T, self.lamb_D = lambdas
         else:
             self.lamb_AE, self.lamb_T, self.lamb_D = self._default_lambdas()
-        
+
+        self.s_s_size = kwargs["s_s_size"]
+        self.s_a_size = kwargs["s_a_size"]
+        self.t_s_size = kwargs["t_s_size"]
+        self.t_a_size = kwargs["t_a_size"]
 
         self.sfc_s = nn.Sequential(
             nn.Linear(self.s_s_size, 64),
@@ -144,5 +143,4 @@ class LitAutoEncoder(ModelInterface):
         ae_dict['inv_M'] = lambda sas: self.decoder(sas)
         return ae_dict
         
-
 

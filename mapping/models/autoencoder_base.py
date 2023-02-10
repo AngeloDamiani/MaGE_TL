@@ -5,7 +5,7 @@ import torch.optim as optim
 from mapping.models import ModelInterface
 
 class LitAutoEncoder(ModelInterface):
-    def __init__(self, T, D, encoder=None, decoder=None, dim_s=None, lambdas=None):
+    def __init__(self, D, T, encoder=None, decoder=None, dim_s=None, lambdas=None):
         super().__init__()
 
         D_dict = D.as_dict()
