@@ -1,0 +1,4 @@
+torch==1.13
+torchvision
+pandas
+pytorch-lightning
