@@ -1,0 +1,1 @@
+{"log_dir": "./logs/ANG_200_3", "T_epochs": 100, "T_batch_size": 100, "T_lr": 0.001, "D_batch_size_pretrain": 237, "D_epochs_pretrain": 23, "D_batch_size": 176, "D_lr": 0.002566248, "D_epochs": 18, "AE_batch_size": 237, "AE_lr": 0.0025642567803780846, "AE_epochs": 68, "iterations": 20, "lmd_D": 5.319785235921638, "lmd_T": 1.1482578540008934, "lmd_R": 12.527073394152433}
