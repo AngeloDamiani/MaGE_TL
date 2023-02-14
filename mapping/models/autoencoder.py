@@ -5,19 +5,21 @@ import torch.optim as optim
 from mapping.models import ModelInterface
 
 class LitAutoEncoder(ModelInterface):
-    def __init__(self, lr=0.0001, **kwargs):
+    def __init__(self, D, T, lambdas=None, lr=0.0001, **kwargs):
         super(LitAutoEncoder, self).__init__(lr)
 
-        self.s_s_size = kwargs['s_s_size']
-        self.s_a_size = kwargs['s_a_size']
-        self.t_s_size = kwargs['t_s_size']
-        self.t_a_size = kwargs['t_a_size']
+        self.D = D
+        self.T = T
 
-        # if lambdas is None:
-        #     self.lamb_AE, self.lamb_T, self.lamb_D = self._default_lambdas()
-        # else:
-        #     self.lamb_AE, self.lamb_T, self.lamb_D = lambdas
-        
+        if lambdas is not None:
+            self.lamb_AE, self.lamb_T, self.lamb_D = lambdas
+        else:
+            self.lamb_AE, self.lamb_T, self.lamb_D = self._default_lambdas()
+
+        self.s_s_size = kwargs["s_s_size"]
+        self.s_a_size = kwargs["s_a_size"]
+        self.t_s_size = kwargs["t_s_size"]
+        self.t_a_size = kwargs["t_a_size"]
 
         self.sfc_s = nn.Sequential(
             nn.Linear(self.s_s_size, 64),
@@ -60,6 +62,8 @@ class LitAutoEncoder(ModelInterface):
             nn.ReLU(),
             nn.Linear(64, 2*self.s_s_size+self.s_a_size)
         )
+    def _default_lambdas(self):
+        return (1,1,1)
 
     def encoder(self, x):
         s_s, a_s, s1_s = torch.split(x, [self.s_s_size, self.s_a_size, self.s_s_size], dim=1)
@@ -86,32 +90,28 @@ class LitAutoEncoder(ModelInterface):
         
         x_hat = self.forward(x)
         
-        #x_enc = self.encoder(x)
+        x_enc = self.encoder(x)
 
-        #s_t, a_t, s1_t = torch.split(x_enc, [self.t_s_size, self.t_a_size, self.t_s_size], dim=1)
-        #valid = torch.zeros((x.shape[0], 1)).fill_(1.0)
+        s_t, a_t, s1_t = torch.split(x_enc, [self.t_s_size, self.t_a_size, self.t_s_size], dim=1)
+        valid = torch.zeros((x.shape[0], 1)).fill_(1.0)
 
         # Compute all independent losses
-        #sa = torch.cat([s_t,a_t],1)
-
-        #with torch.no_grad():
-        #    T_loss = nn.L1Loss()(self._T(sa), s1_t)
-        #    D_loss = nn.BCELoss()(self._D(x_enc), valid)
-
+        sa = torch.cat([s_t,a_t],1)
+        T_loss = nn.L1Loss()(self.T(sa), s1_t)
+        D_loss = nn.BCELoss()(self.D(x_enc), valid)
         AE_loss = nn.MSELoss()(x, x_hat)
 
-        return AE_loss#, T_loss, D_loss
+        return AE_loss, D_loss, T_loss
 
     def compute_loss(self, batch, log_mode=None):
-        #AE_loss, T_loss, D_loss = self._get_loss(batch)
-        AE_loss = self._get_loss(batch)
-        #loss = self.lamb_AE*AE_loss + self.lamb_T*T_loss + self.lamb_D*D_loss
-        loss = AE_loss
+        AE_loss, T_loss, D_loss = self._get_loss(batch)
+        loss = self.lamb_AE*AE_loss + self.lamb_T*T_loss + self.lamb_D*D_loss
+        
         if log_mode:
             self.log(f"{log_mode}_loss", loss)
-            # self.log(f"{log_mode}_AE_loss", AE_loss)
-            # self.log(f"{log_mode}_T_loss", T_loss)
-            # self.log(f"{log_mode}_D_loss", D_loss)
+            self.log(f"{log_mode}_AE_loss", AE_loss)
+            self.log(f"{log_mode}_T_loss", T_loss)
+            self.log(f"{log_mode}_D_loss", D_loss)
         return loss
 
     def backward(self, loss, optimizer, optimizer_idx):
@@ -143,5 +143,4 @@ class LitAutoEncoder(ModelInterface):
         ae_dict['inv_M'] = lambda sas: self.decoder(sas)
         return ae_dict
         
-
 

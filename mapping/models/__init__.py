@@ -51,7 +51,7 @@ class ModelInterface(pl.LightningModule):
         m_dict['func'] = lambda X: self(X)
         return m_dict
 
-from mapping.models.autoencoder_TD import LitAutoEncoder
+from mapping.models.autoencoder import LitAutoEncoder
 from mapping.models.discriminator import Discriminator
 from mapping.models.transition_model import TransitionModel
 
