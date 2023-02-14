@@ -27,7 +27,36 @@ def read_errors(folder, prefix):
     return errors
 
 
-def plot_errors(errors, skip_models):
+def plot_errors_vs_H(description, folder, skip_models=[], average=False):
+    fig, ax = plt.subplots()
+
+    label_it = True
+    for h, runs in description.items():
+        h_errors = defaultdict(list)
+        for subfolder in runs:
+            errors = read_error(folder, subfolder)
+            for i, model in enumerate(model_names):
+                h_errors[model].append(sum(errors[i]) / len(errors[i]))        
+
+        cmap = plt.get_cmap("tab10")
+        for i, model in enumerate(model_names):
+            if not model in skip_models:
+                if average:
+                    h_errors[model] = [sum(h_errors[model]) / len(h_errors[model])]
+
+                label = model if label_it else None
+                x = [h] * len(h_errors[model])
+                y = h_errors[model]
+                ax.scatter(x, y, label=label, color=cmap(i))
+                ax.legend()
+        
+        label_it = False
+
+    fig.set_size_inches(10.5, 6.5)
+    plt.grid(True)
+    plt.show()
+
+def plot_errors(errors, skip_models=[]):
     fig, ax = plt.subplots()
     for model, error in errors.items():
         if not model in skip_models:
