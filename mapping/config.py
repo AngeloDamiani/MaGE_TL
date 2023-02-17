@@ -1,6 +1,6 @@
 DATA_DIR = 'data/'
 PROBLEMS_CONFIG = {
-    'H' : 100,
+    'H' : 300,
     'MC': {
         'csvs': {
             'source': DATA_DIR+'UntrainedMCDataset5000.csv',

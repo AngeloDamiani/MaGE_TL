@@ -21,6 +21,7 @@ def get_explore_config(id, prefix, base_logs="./logs"):
         "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
     }
 
+
 def get_random_config(id, prefix, base_logs="./logs"):
     return {
         "D_batch_size_pretrain": randint(50, 350),
@@ -44,21 +45,21 @@ def get_random_config(id, prefix, base_logs="./logs"):
 
 def get_ran1003_config(id, prefix, base_logs="./logs"):
     return {
-    "D_batch_size_pretrain": 188,
-    "D_epochs_pretrain": 25,
-    "D_batch_size": 276,
-    "D_lr": 0.0003732592074541112,
-    "D_epochs": 30,
-    "AE_batch_size": 88,
-    "AE_lr": 0.0038688422199228494,
-    "AE_epochs": 76,
-    "iterations": 20,
-    "T_epochs": 100,
-    "T_batch_size": 100,
-    "T_lr": 0.0001,
-    "lmd_D": 1.7117454788938802,
-    "lmd_T": 8.504341235671774,
-    "lmd_R": 9.318351086808468,
+        "D_batch_size_pretrain": 188,
+        "D_epochs_pretrain": 25,
+        "D_batch_size": 276,
+        "D_lr": 0.0003732592074541112,
+        "D_epochs": 30,
+        "AE_batch_size": 88,
+        "AE_lr": 0.0038688422199228494,
+        "AE_epochs": 76,
+        "iterations": 20,
+        "T_epochs": 100,
+        "T_batch_size": 100,
+        "T_lr": 0.0001,
+        "lmd_D": 1.7117454788938802,
+        "lmd_T": 8.504341235671774,
+        "lmd_R": 9.318351086808468,
         "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
     }
 
@@ -129,22 +130,23 @@ def get_g5_config(id, prefix, base_logs="./logs"):
 def get_a1_config(id, prefix, base_logs="./logs"):
     return {
         "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
-  "D_batch_size_pretrain": 308,
-  "D_epochs_pretrain": 22,
-  "D_batch_size": 189,
-  "D_lr": 0.001172294006946692,
-  "D_epochs": 19,
-  "AE_batch_size": 346,
-  "AE_lr": 0.0020911086155821104,
-  "AE_epochs": 52,
-  "iterations": 20,
-  "T_epochs": 100,
-  "T_batch_size": 100,
-  "T_lr": 0.0001,
-  "lmd_D": 5.108571768295475,
-  "lmd_T": 0.8972927444857055,
-  "lmd_R": 12.745102985142589
-}
+        "D_batch_size_pretrain": 308,
+        "D_epochs_pretrain": 22,
+        "D_batch_size": 189,
+        "D_lr": 0.001172294006946692,
+        "D_epochs": 19,
+        "AE_batch_size": 346,
+        "AE_lr": 0.0020911086155821104,
+        "AE_epochs": 52,
+        "iterations": 20,
+        "T_epochs": 100,
+        "T_batch_size": 100,
+        "T_lr": 0.0001,
+        "lmd_D": 5.108571768295475,
+        "lmd_T": 0.8972927444857055,
+        "lmd_R": 12.745102985142589,
+    }
+
 
 def get_default_config(id, prefix, base_logs="./logs"):
     return {
@@ -187,6 +189,28 @@ def get_debug_config(id, prefix, base_logs="./logs"):
         "lmd_R": 1,
     }
 
+
+def get_good50_config(id, prefix, base_logs="./logs"):
+    return {
+        "D_batch_size_pretrain": 207,
+        "D_epochs_pretrain": 49,
+        "D_batch_size": 143,
+        "D_lr": 0.0024945613145671737,
+        "D_epochs": 28,
+        "AE_batch_size": 427,
+        "AE_lr": 0.0013395992043097756,
+        "AE_epochs": 92,
+        "iterations": 20,
+        "T_epochs": 100,
+        "T_batch_size": 100,
+        "T_lr": 0.0001,
+        "lmd_D": 3.4479410092409024,
+        "lmd_T": 1.2586091236061125,
+        "lmd_R": 4.109433552072859,
+        "log_dir": f"{base_logs}/{prefix}_{id}",
+    }  # OK
+
+
 def get_ang0_config(id, prefix, base_logs="./logs"):
     return {
         "log_dir": f"{base_logs}/{prefix}_{id}",  # OK
@@ -204,7 +228,7 @@ def get_ang0_config(id, prefix, base_logs="./logs"):
         "iterations": 20,
         "lmd_D": 5.319785235921638,
         "lmd_T": 1.1482578540008934,
-        "lmd_R": 12.527073394152433
+        "lmd_R": 12.527073394152433,
     }
 
 
@@ -218,9 +242,10 @@ config_functs = {
     "A1": get_a1_config,
     "ANG0": get_ang0_config,
     "RAN1003": get_ran1003_config,
+    "good50": get_good50_config
 }
 
 
 def get_config(id, prefix="run", mode=None, base_logs="./logs"):
-    config = config_functs.get(mode, get_random_config)  
+    config = config_functs.get(mode, get_random_config)
     return config(id, prefix)

@@ -2,9 +2,9 @@
 
 count=20
 base_logs="./logs"
-prefix="RAN_100"
+prefix="ran_300"
 script="source_2_target.py"
-mode="RAN1003" #"default" | "random" | "debug" | "G1" | "G4" | "G5" | "ANG0"
+mode="random" #"default" | "random" | "debug" | "G1" | "G4" | "G5" | "ANG0"
 source="Pend" #"Pend" | "MC"
 target="MC" #"Pend" | "MC"
 
